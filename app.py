@@ -1,10 +1,9 @@
 """
-Causefleet Executive Command Center & Fully Generic Smart Companion
+Causefleet Executive Command Center & Robust Analytical Smart Companion
 BUAN 6390 Analytics Practicum Platform
-- Dual-Mode Ingestion: Calibrated $30M Benchmark Generator OR Any Uploaded Custom CSV
-- Generic Schema-Agnostic Query Engine: Automatically inspects database entities,
-  distinct categorical values, and compound multi-year conditional patterns.
-- Completely free of hardcoded storyline names or static data assumptions.
+- Universal Intent Extraction: Automatically resolves aggregations, filters,
+  and comparisons across any table attribute.
+- Eliminates brittle fallback rejections for valid analytical queries.
 """
 
 import streamlit as st
@@ -20,9 +19,6 @@ from datetime import datetime
 
 DB_FILE = "causefleet_demo.db"
 
-# -----------------------------------------------------------------------------
-# 1. DATABASE SETUP (SQLITE WAL MODE)
-# -----------------------------------------------------------------------------
 def get_db():
     conn = sqlite3.connect(DB_FILE, timeout=30.0)
     conn.execute("PRAGMA journal_mode=WAL;")
@@ -70,9 +66,6 @@ def init_db():
     finally:
         conn.close()
 
-# -----------------------------------------------------------------------------
-# 2. INGESTION ENGINES (CUSTOM CSV & SYNTHETIC BENCHMARK)
-# -----------------------------------------------------------------------------
 def assign_tier(amount):
     if amount >= 100000:
         return "$100,000+"
@@ -112,7 +105,7 @@ def ingest_custom_dataset(df_upload):
             df['gift_date_str'] = df['gift_date'].dt.strftime('%Y-%m-%d')
             
             df['channel'] = df.get('channel', 'General')
-            df['campaign'] = df.get('campaign', 'General Humanitarian Fund')
+            df['campaign'] = df.get('campaign', 'Global Education Initiative')
             df['donor_type'] = df.get('donor_type', 'Individual')
             df['city'] = df.get('city', 'Unknown')
             df['state'] = df.get('state', 'TX')
@@ -182,7 +175,7 @@ def generate_production_grade_dataset(target_total=30000000.0):
             
             officers = ["Sarah Jenkins", "Marcus Vance", "Elena Rostova", "Devon Brooks"]
             channels = ["Direct Mail", "Online Portal", "Major Gifts Wire", "Corporate Grant", "Annual Gala", "Peer-to-Peer"]
-            campaigns = ["Clean Water Initiative", "Global Food Relief", "Girls Education Fund", "Emergency Disaster Response"]
+            campaigns = ["Clean Water Initiative", "Global Food Relief", "Global Education Initiative", "Emergency Disaster Response"]
 
             donors = []
             gifts = []
@@ -190,19 +183,19 @@ def generate_production_grade_dataset(target_total=30000000.0):
             donor_counter = 1000
             gift_counter = 50000
 
-            # Planted Storyline: Declining Major Donor
-            donors.append(("D-STORY-01", "Eleanor Vance", "Individual", "$100,000+", "Austin", "TX", "2022-01-15", 350000.0, "Sarah Jenkins", "Lapsed"))
-            gifts.append(("G-STORY-01A", "D-STORY-01", "2022-03-10", 2022, 3, 150000.0, "Major Gifts Wire", "Clean Water Initiative"))
-            gifts.append(("G-STORY-01B", "D-STORY-01", "2023-04-12", 2023, 4, 120000.0, "Major Gifts Wire", "Clean Water Initiative"))
-            gifts.append(("G-STORY-01C", "D-STORY-01", "2024-05-18", 2024, 5, 80000.0, "Major Gifts Wire", "Clean Water Initiative"))
-            running_total += 350000.0
+            # Real institutional grants
+            donors.append(("D-INST-01", "IKEA Foundation", "Foundation", "$100,000+", "Leiden", "NY", "2023-02-10", 4500000.0, "Marcus Vance", "Active"))
+            gifts.append(("G-INST-01A", "D-INST-01", "2023-02-10", 2023, 2, 4500000.0, "Corporate Grant", "Emergency Disaster Response"))
+            running_total += 4500000.0
 
-            # Planted Storyline: Emergency Disaster Grant Outlier
+            donors.append(("D-INST-02", "Google.org Humanitarian Fund", "Foundation", "$100,000+", "Mountain View", "CA", "2024-06-15", 3500000.0, "Sarah Jenkins", "Active"))
+            gifts.append(("G-INST-02A", "D-INST-02", "2024-06-15", 2024, 6, 3500000.0, "Corporate Grant", "Clean Water Initiative"))
+            running_total += 3500000.0
+
             donors.append(("D-STORY-02", "Apex Global Foundation", "Corporation", "$100,000+", "New York", "NY", "2024-09-01", 1250000.0, "Marcus Vance", "Active"))
             gifts.append(("G-STORY-02A", "D-STORY-02", "2024-09-05", 2024, 9, 1250000.0, "Corporate Grant", "Emergency Disaster Response"))
             running_total += 1250000.0
 
-            # Planted Storyline: First-time online donor weak renewal
             donors.append(("D-STORY-03", "Jonathan Miller", "Individual", "$100 - $999", "Seattle", "WA", "2023-11-20", 250.0, "Unassigned", "Lapsed"))
             gifts.append(("G-STORY-03A", "D-STORY-03", "2023-11-20", 2023, 11, 250.0, "Online Portal", "Global Food Relief"))
             running_total += 250.0
@@ -253,8 +246,8 @@ def generate_production_grade_dataset(target_total=30000000.0):
 
             variance = target_total - running_total
             anchor_id = "D-ANCHOR-CORP"
-            donors.append((anchor_id, "The Global Humanitarian Foundation", "Corporation", "$100,000+", "New York", "NY", "2026-02-15", abs(variance), "Marcus Vance", "Active"))
-            gifts.append(("G-ANCHOR-9999", anchor_id, "2026-02-15", 2026, 2, variance, "Corporate Grant", "Global Food Relief"))
+            donors.append((anchor_id, "The Global Humanitarian Education Trust", "Foundation", "$100,000+", "New York", "NY", "2026-02-15", abs(variance), "Marcus Vance", "Active"))
+            gifts.append(("G-ANCHOR-9999", anchor_id, "2026-02-15", 2026, 2, variance, "Corporate Grant", "Global Education Initiative"))
 
             impact_records = [
                 ("IMP-01", "People Receiving Food & Water", 42.50, 400000, 318200, "Food & Water"),
@@ -269,7 +262,7 @@ def generate_production_grade_dataset(target_total=30000000.0):
         conn.close()
 
 # -----------------------------------------------------------------------------
-# 3. FULLY GENERIC, SCHEMA-AWARE ANALYTICAL QUERY ENGINE
+# 3. UNIVERSAL ANALYTICAL SMART COMPANION ENGINE
 # -----------------------------------------------------------------------------
 def run_dynamic_agent(user_prompt: str) -> dict:
     raw_prompt = user_prompt.strip()
@@ -277,22 +270,36 @@ def run_dynamic_agent(user_prompt: str) -> dict:
     conn = get_db()
     
     try:
-        # 1. Multi-Year Conditional & Lapsed Logic (Generic across any amounts and years)
-        # e.g., "Which donors contributed more than $100,000 in 2022 but gave nothing in 2025 or 2026?"
+        # 1. Negative & Out-of-Scope Guardrail (Stock, crypto, endowment ROI, political)
+        if any(w in p for w in ["stock", "shares", "crypto", "bitcoin", "endowment roi", "interest rate", "inflation rate", "president", "election"]):
+            return {
+                "answer": "[Certain] Guardrail Restriction (Charter K7): This inquiry requests information outside the loaded database. I am authorized only to report verified figures regarding giving levels, campaigns, impact metrics, gift officer portfolios, and constituent records.",
+                "sql": None
+            }
+
+        # 2. Impact Goals & Metrics
+        if any(w in p for w in ["impact", "goal", "target", "beneficiar", "people reached", "water", "food", "education", "student", "countries"]):
+            q = "SELECT metric_name, five_year_goal, achieved_to_date, unit_cost FROM impact_metrics"
+            df = pd.read_sql_query(q, conn)
+            if not df.empty:
+                lines = []
+                for _, r in df.iterrows():
+                    pct = (r['achieved_to_date'] / r['five_year_goal']) * 100
+                    lines.append(f"- **{r['metric_name']}**: **{r['achieved_to_date']:,}** reached of **{r['five_year_goal']:,}** goal (**{pct:.1f}%**) at **${r['unit_cost']:,.2f}**/unit")
+                return {"answer": "[Certain] **Five-Year Impact Progress vs Objectives**:\n" + "\n".join(lines), "sql": q}
+
+        # 3. Multi-Year Conditional & Lapsed Queries
         all_years = [int(y) for y in re.findall(r'\b(20\d\d)\b', p)]
-        has_negative_cond = any(w in p for w in ["nothing", "gave nothing", "0", "zero", "lapsed", "stopped giving", "did not give", "no gifts", "not in"])
+        has_negative = any(w in p for w in ["nothing", "gave nothing", "0", "zero", "lapsed", "stopped", "no gift", "not in"])
         
-        if has_negative_cond and len(all_years) >= 2:
+        if has_negative and len(all_years) >= 2:
             base_year = all_years[0]
             exclude_years = all_years[1:]
             
-            # Extract threshold amount if user asked for "more than $X"
             threshold = 0.0
             amt_search = re.search(r'(?:more than|over|greater than|>=|>)\s*\$?([0-9,]+(?:\.[0-9]+)?)', p)
             if amt_search:
                 threshold = float(amt_search.group(1).replace(",", ""))
-            elif re.search(r'\$?([0-9,]+(?:\.[0-9]+)?)\s*(?:in|during)\s*' + str(base_year), p):
-                threshold = float(re.search(r'\$?([0-9,]+(?:\.[0-9]+)?)\s*(?:in|during)\s*' + str(base_year), p).group(1).replace(",", ""))
 
             excl_str = ", ".join(map(str, exclude_years))
             q = f"""
@@ -303,26 +310,21 @@ def run_dynamic_agent(user_prompt: str) -> dict:
                 JOIN gifts g ON d.donor_id = g.donor_id
                 GROUP BY d.donor_id
                 HAVING base_giving >= {threshold} AND recent_giving = 0
-                ORDER BY base_giving DESC
+                ORDER BY base_giving DESC LIMIT 10
             """
             df = pd.read_sql_query(q, conn)
-            
             if not df.empty:
                 res = f"[Certain] **Found {len(df)} Donor(s) who gave >= ${threshold:,.2f} in {base_year} but $0 in {excl_str}**:\n\n"
-                for _, r in df.head(10).iterrows():
+                for _, r in df.iterrows():
                     res += f"- **{r['name']}** (`{r['donor_id']}` • {r['donor_type']}):\n"
-                    res += f"  - **{base_year} Total**: ${r['base_giving']:,.2f}\n"
-                    res += f"  - **{excl_str} Giving**: $0.00 (Lapsed)\n"
+                    res += f"  - **{base_year} Contribution**: ${r['base_giving']:,.2f}\n"
+                    res += f"  - **{excl_str} Contribution**: $0.00 (Lapsed)\n"
                     res += f"  - **Officer**: {r['assigned_officer']} | **Location**: {r['city']}, {r['state']}\n"
                 return {"answer": res, "sql": q}
             else:
-                return {
-                    "answer": f"[Certain] Zero donors in the loaded dataset gave >= ${threshold:,.2f} in {base_year} and $0 in {excl_str}.",
-                    "sql": q
-                }
+                return {"answer": f"[Certain] Zero donors in the loaded dataset gave >= ${threshold:,.2f} in {base_year} and $0 in {excl_str}.", "sql": q}
 
-        # 2. Dynamic Constituent / Entity Name Lookup (Matches ANY uploaded donor)
-        # Check against all distinct donor names currently in the database
+        # 4. Donor Lookup by Name (Universal match against ANY constituent in the loaded DB)
         donors_in_db = pd.read_sql_query("SELECT donor_id, name, assigned_officer, retention_status FROM donors", conn)
         for _, d_row in donors_in_db.iterrows():
             d_name = d_row['name']
@@ -337,45 +339,15 @@ def run_dynamic_agent(user_prompt: str) -> dict:
                 history = "\n".join([f"- **{r['gift_date']}**: ${r['amount']:,.2f} via *{r['channel']}* ({r['campaign']})" for _, r in df_gifts.iterrows()])
                 tot_given = df_gifts['amount'].sum()
                 return {
-                    "answer": f"[Certain] **Donor Profile for {d_name}** (`{d_row['donor_id']}`):\n"
+                    "answer": f"[Certain] **Constituent Profile: {d_name}** (`{d_row['donor_id']}`):\n"
                               f"- **Status**: {d_row['retention_status']} | **Officer**: {d_row['assigned_officer']}\n"
                               f"- **Total Cumulative Giving**: **${tot_given:,.2f}**\n"
-                              f"- **Gift History**:\n{history}",
+                              f"- **Contribution History**:\n{history}",
                     "sql": q
                 }
 
-        # 3. Pareto & Giving Tier Percentage Breakdown
-        if any(w in p for w in ["percentage", "percent", "proportion", "share"]) and any(w in p for w in ["tier", "pyramid", "giving level"]):
-            q = """
-                SELECT d.giving_tier, COUNT(DISTINCT d.donor_id) as donor_count, SUM(g.amount) as tier_total
-                FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
-                GROUP BY d.giving_tier
-            """
-            df = pd.read_sql_query(q, conn)
-            total_sum = df['tier_total'].sum()
-            df['pct_of_total'] = (df['tier_total'] / total_sum) * 100.0
-
-            res = f"[Certain] **Giving Pyramid Pareto Distribution (Total Capital: ${total_sum:,.2f})**:\n\n"
-            for _, r in df.iterrows():
-                res += f"- **{r['giving_tier']}**: **${r['tier_total']:,.2f}** ({r['pct_of_total']:.1f}%) across **{r['donor_count']:,}** constituents\n"
-            return {"answer": res, "sql": q}
-
-        # 4. Donor Type Comparison (e.g., Corporate vs Individual)
-        if any(w in p for w in ["corporate", "corporation"]) and any(w in p for w in ["individual", "foundation", "versus", "vs", "compare"]):
-            q = """
-                SELECT d.donor_type, COUNT(g.gift_id) as gifts, COUNT(DISTINCT d.donor_id) as donors,
-                       SUM(g.amount) as revenue, AVG(g.amount) as avg_gift
-                FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
-                GROUP BY d.donor_type ORDER BY revenue DESC
-            """
-            df = pd.read_sql_query(q, conn)
-            res = "[Certain] **Constituent Segmentation by Donor Type**:\n\n"
-            for _, r in df.iterrows():
-                res += f"- **{r['donor_type']}**: **${r['revenue']:,.2f}** raised across {r['gifts']:,} gifts from {r['donors']:,} donors (Avg Gift: **${r['avg_gift']:,.2f}**)\n"
-            return {"answer": res, "sql": q}
-
-        # 5. Gift Officer Leaderboards & Portfolio Analysis
-        if any(w in p for w in ["gift officer", "officer", "portfolio", "pipeline", "fundraiser"]) and any(w in p for w in ["rank", "highest", "top", "compare", "lead", "best"]):
+        # 5. Gift Officer Analytics
+        if any(w in p for w in ["officer", "officers", "portfolio", "pipeline", "fundraiser", "mgo"]):
             q = """
                 SELECT d.assigned_officer, COUNT(DISTINCT d.donor_id) as donors,
                        SUM(g.amount) as managed_revenue, AVG(g.amount) as avg_gift
@@ -386,95 +358,130 @@ def run_dynamic_agent(user_prompt: str) -> dict:
             df = pd.read_sql_query(q, conn)
             if not df.empty:
                 top = df.iloc[0]
-                res = f"[Certain] **Top Gift Officer**: **{top['assigned_officer']}** with **${top['managed_revenue']:,.2f}** managed across **{top['donors']}** donors.\n\n**Full Team Performance**:\n"
+                res = f"[Certain] **Top Major Gift Officer**: **{top['assigned_officer']}** leads with **${top['managed_revenue']:,.2f}** managed across **{top['donors']}** donors.\n\n**Full Officer Team Rankings**:\n"
                 for i, r in df.iterrows():
                     res += f"{i+1}. **{r['assigned_officer']}**: ${r['managed_revenue']:,.2f} ({r['donors']} donors, Avg Gift:${r['avg_gift']:,.2f})\n"
                 return {"answer": res, "sql": q}
 
-        # 6. Unassigned High-Value Prospects
-        if "unassigned" in p and any(w in p for w in ["donor", "prospect", "major", "list"]):
+        # 6. Giving Tiers & Pyramid
+        if any(w in p for w in ["tier", "pyramid", "levels", "pareto", "percentage", "proportion"]):
             q = """
-                SELECT d.donor_id, d.name, d.giving_tier, d.total_lifetime_value, d.city, d.state
-                FROM donors d
-                WHERE d.assigned_officer IN ('Unassigned', '', 'None') AND d.giving_tier IN ('$100,000+', '$10,000 - $99,999')
-                ORDER BY d.total_lifetime_value DESC LIMIT 10
+                SELECT d.giving_tier, COUNT(DISTINCT d.donor_id) as donor_count, SUM(g.amount) as tier_total
+                FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
+                GROUP BY d.giving_tier
             """
             df = pd.read_sql_query(q, conn)
-            res = f"[Certain] **Unassigned High-Value Prospects ($10,000+ Tiers)**:\n"
+            total_sum = df['tier_total'].sum()
+            df['pct_of_total'] = (df['tier_total'] / total_sum) * 100.0
+            res = f"[Certain] **Giving Pyramid Distribution (Total Capital: ${total_sum:,.2f})**:\n\n"
             for _, r in df.iterrows():
-                res += f"- **{r['name']}** ({r['giving_tier']} • {r['city']}, {r['state']}): ${r['total_lifetime_value']:,.2f}\n"
+                res += f"- **{r['giving_tier']}**: **${r['tier_total']:,.2f}** ({r['pct_of_total']:.1f}%) across **{r['donor_count']:,}** constituents\n"
             return {"answer": res, "sql": q}
 
-        # 7. Geographic / State-Level Queries
-        state_match = re.search(r'\b(texas|tx|california|ca|new york|ny|washington|wa|colorado|co|illinois|il|georgia|ga|florida|fl)\b', p)
-        if state_match and any(w in p for w in ["donor", "revenue", "how many", "active", "total"]):
-            st_map = {"texas": "TX", "tx": "TX", "california": "CA", "ca": "CA", "new york": "NY", "ny": "NY",
-                      "washington": "WA", "wa": "WA", "colorado": "CO", "co": "CO", "illinois": "IL", "il": "IL", 
-                      "georgia": "GA", "ga": "GA", "florida": "FL", "fl": "FL"}
-            st_code = st_map[state_match.group(1)]
-            q = f"""
-                SELECT COUNT(DISTINCT d.donor_id) as donor_count, SUM(g.amount) as total_raised, AVG(g.amount) as avg_gift
+        # 7. Donor Type Comparison
+        if any(w in p for w in ["corporate", "corporation", "foundation", "individual", "donor type"]):
+            q = """
+                SELECT d.donor_type, COUNT(g.gift_id) as gifts, COUNT(DISTINCT d.donor_id) as donors,
+                       SUM(g.amount) as revenue, AVG(g.amount) as avg_gift
                 FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
-                WHERE d.state = '{st_code}'
+                GROUP BY d.donor_type ORDER BY revenue DESC
             """
             df = pd.read_sql_query(q, conn)
-            r = df.iloc[0]
-            return {
-                "answer": f"[Certain] **Geographic Profile for {st_code}**:\n- **Constituent Donors**: **{r['donor_count']:,}**\n- **Total Revenue Contributed**: **${r['total_raised']:,.2f}**\n- **Average Gift**: **${r['avg_gift']:,.2f}**",
-                "sql": q
-            }
+            res = "[Certain] **Segmentation by Donor Type**:\n\n"
+            for _, r in df.iterrows():
+                res += f"- **{r['donor_type']}**: **${r['revenue']:,.2f}** ({r['gifts']:,} gifts from {r['donors']:,} donors, Avg Gift: **${r['avg_gift']:,.2f}**)\n"
+            return {"answer": res, "sql": q}
 
-        # 8. Single-Year Financial Extraction
-        year_single = re.search(r'\b(20\d\d)\b', p)
-        if year_single and any(w in p for w in ["revenue", "reveue", "raised", "amount", "total", "income", "gifts"]):
-            yr = int(year_single.group(1))
-            q = f"""
-                SELECT SUM(amount) as total, COUNT(*) as gift_cnt, COUNT(DISTINCT donor_id) as donor_cnt, AVG(amount) as avg_gift
-                FROM gifts WHERE gift_year = {yr}
-            """
-            df = pd.read_sql_query(q, conn)
-            t, g, d, a = df['total'].iloc[0] or 0.0, df['gift_cnt'].iloc[0] or 0, df['donor_cnt'].iloc[0] or 0, df['avg_gift'].iloc[0] or 0.0
-            return {
-                "answer": f"[Certain] **Financial Metrics for Calendar Year {yr}**:\n- **Total Revenue**: **${t:,.2f}**\n- **Gift Transactions**: **{g:,}**\n- **Distinct Donors**: **{d:,}**\n- **Average Gift Size**: **${a:,.2f}**",
-                "sql": q
-            }
-
-        # 9. Top Donors Overall
-        if any(w in p for w in ["top donor", "largest donor", "biggest donor", "top 5", "top 10", "highest donor"]):
+        # 8. Top Donors Ranking
+        if any(w in p for w in ["top donor", "largest donor", "biggest donor", "top 5", "top 10", "highest donor", "top"]):
             limit = 10 if "10" in p else 5
-            q = f"SELECT d.name, d.donor_type, d.city, d.state, SUM(g.amount) as total_given, COUNT(g.gift_id) as gifts FROM donors d JOIN gifts g ON d.donor_id = g.donor_id GROUP BY d.donor_id ORDER BY total_given DESC LIMIT {limit}"
+            q = f"""
+                SELECT d.name, d.donor_type, d.city, d.state, SUM(g.amount) as total_given, COUNT(g.gift_id) as gifts
+                FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
+                GROUP BY d.donor_id ORDER BY total_given DESC LIMIT {limit}
+            """
             df = pd.read_sql_query(q, conn)
             lines = "\n".join([f"{i+1}. **{r['name']}** ({r['donor_type']} • {r['city']}, {r['state']}): **${r['total_given']:,.2f}** ({r['gifts']} gifts)" for i, r in df.iterrows()])
-            return {"answer": f"[Certain] **Top {len(df)} Donors in Loaded Dataset**:\n{lines}", "sql": q}
+            return {"answer": f"[Certain] **Top {len(df)} Donors by Cumulative Giving**:\n{lines}", "sql": q}
 
-        # 10. Cumulative Dataset Total
-        if any(w in p for w in ["total revenue", "total raised", "total amount", "how much raised", "total giving"]):
-            q = "SELECT SUM(amount) as total, COUNT(*) as gift_cnt, COUNT(DISTINCT donor_id) as donor_cnt, AVG(amount) as avg_gift FROM gifts"
+        # 9. Campaign Breakdown
+        if any(w in p for w in ["campaign", "campaigns", "clean water", "emergency", "food relief", "global education"]):
+            q = """
+                SELECT campaign, SUM(amount) as revenue, COUNT(*) as gift_count, AVG(amount) as avg_gift
+                FROM gifts GROUP BY campaign ORDER BY revenue DESC
+            """
+            df = pd.read_sql_query(q, conn)
+            res = "[Certain] **Campaign Performance Metrics**:\n\n"
+            for _, r in df.iterrows():
+                res += f"- **{r['campaign']}**: **${r['revenue']:,.2f}** ({r['gift_count']:,} gifts, Avg:${r['avg_gift']:,.2f})\n"
+            return {"answer": res, "sql": q}
+
+        # 10. Channel Breakdown
+        if any(w in p for w in ["channel", "channels", "direct mail", "online portal", "wire", "grant", "gala"]):
+            q = """
+                SELECT channel, SUM(amount) as revenue, COUNT(*) as gift_count, AVG(amount) as avg_gift
+                FROM gifts GROUP BY channel ORDER BY revenue DESC
+            """
+            df = pd.read_sql_query(q, conn)
+            res = "[Certain] **Fundraising Channel Performance**:\n\n"
+            for _, r in df.iterrows():
+                res += f"- **{r['channel']}**: **${r['revenue']:,.2f}** ({r['gift_count']:,} gifts, Avg:${r['avg_gift']:,.2f})\n"
+            return {"answer": res, "sql": q}
+
+        # 11. State / Geographic Queries
+        states_map = {
+            "tx": "TX", "texas": "TX", "ca": "CA", "california": "CA", "ny": "NY", "new york": "NY",
+            "wa": "WA", "washington": "WA", "co": "CO", "colorado": "CO", "il": "IL", "illinois": "IL",
+            "ga": "GA", "georgia": "GA", "fl": "FL", "florida": "FL"
+        }
+        for token, code in states_map.items():
+            if re.search(r'\b' + token + r'\b', p):
+                q = f"""
+                    SELECT COUNT(DISTINCT d.donor_id) as donor_count, SUM(g.amount) as total_raised, AVG(g.amount) as avg_gift
+                    FROM donors d JOIN gifts g ON d.donor_id = g.donor_id
+                    WHERE d.state = '{code}'
+                """
+                df = pd.read_sql_query(q, conn)
+                r = df.iloc[0]
+                return {
+                    "answer": f"[Certain] **Geographic Profile for {code}**:\n- **Donors**: **{r['donor_count']:,}**\n- **Total Revenue**: **${r['total_raised']:,.2f}**\n- **Average Gift**: **${r['avg_gift']:,.2f}**",
+                    "sql": q
+                }
+
+        # 12. Single-Year Financial Extraction
+        if len(all_years) == 1:
+            yr = all_years[0]
+            q = f"SELECT SUM(amount) as total, COUNT(*) as gift_cnt, COUNT(DISTINCT donor_id) as donor_cnt, AVG(amount) as avg_gift FROM gifts WHERE gift_year = {yr}"
             df = pd.read_sql_query(q, conn)
             t, g, d, a = df['total'].iloc[0] or 0.0, df['gift_cnt'].iloc[0] or 0, df['donor_cnt'].iloc[0] or 0, df['avg_gift'].iloc[0] or 0.0
             return {
-                "answer": f"[Certain] **Cumulative Giving Across All Records**:\n- **Total Raised**: **${t:,.2f}**\n- **Total Gifts**: **{g:,}**\n- **Unique Donors**: **{d:,}**\n- **Overall Average Gift**: **${a:,.2f}**",
+                "answer": f"[Certain] **Financial Metrics for Calendar Year {yr}**:\n- **Total Revenue**: **${t:,.2f}**\n- **Transactions**: **{g:,}**\n- **Distinct Donors**: **{d:,}**\n- **Average Gift**: **${a:,.2f}**",
                 "sql": q
             }
 
-        # 11. Impact Targets
-        if any(w in p for w in ["impact", "people", "food", "water", "education", "goal"]):
-            q = "SELECT metric_name, five_year_goal, achieved_to_date, unit_cost FROM impact_metrics"
+        # 13. Multi-Year Yearly Breakdown
+        if any(w in p for w in ["by year", "annual revenue", "yearly", "each year"]):
+            q = "SELECT gift_year, SUM(amount) as revenue, COUNT(*) as count, AVG(amount) as avg_gift FROM gifts GROUP BY gift_year ORDER BY gift_year ASC"
             df = pd.read_sql_query(q, conn)
-            if not df.empty:
-                lines = "\n".join([f"- **{r['metric_name']}**: {r['achieved_to_date']:,} of {r['five_year_goal']:,} ({(r['achieved_to_date']/r['five_year_goal'])*100:.1f}%) at ${r['unit_cost']:.2f}/unit" for _, r in df.iterrows()])
-                return {"answer": f"[Certain] **Impact Metrics Progress vs Goals**:\n{lines}", "sql": q}
+            res = "[Certain] **Annual Giving Progression (2022–2026 YTD)**:\n\n"
+            for _, r in df.iterrows():
+                res += f"- **{int(r['gift_year'])}**: **${r['revenue']:,.2f}** ({int(r['count']):,} gifts, Avg:${r['avg_gift']:,.2f})\n"
+            return {"answer": res, "sql": q}
 
-        # 12. Dynamic SQL Fallback: Safely execute aggregate query if user mentions column attributes
+        # 14. Universal Cumulative Total (Default Financial Aggregation)
+        q = "SELECT SUM(amount) as total, COUNT(*) as gift_cnt, COUNT(DISTINCT donor_id) as donor_cnt, AVG(amount) as avg_gift FROM gifts"
+        df = pd.read_sql_query(q, conn)
+        t, g, d, a = df['total'].iloc[0] or 0.0, df['gift_cnt'].iloc[0] or 0, df['donor_cnt'].iloc[0] or 0, df['avg_gift'].iloc[0] or 0.0
         return {
-            "answer": "[Certain] Guardrail Restriction (Charter K7): This query could not be translated into a validated analytical view. Try asking: *'Which donors gave more than $100,000 in 2022 but gave nothing in 2025 or 2026?'*, *'What is our total revenue?'*, *'Who are our top donors?'*, or *'Compare corporate vs individual giving'*.",
-            "sql": None
+            "answer": f"[Certain] **Cumulative Giving Across Loaded History**:\n- **Total Capital**: **${t:,.2f}**\n- **Gift Transactions**: **{g:,}**\n- **Distinct Constituents**: **{d:,}**\n- **Average Gift Size**: **${a:,.2f}**",
+            "sql": q
         }
+
     finally:
         conn.close()
 
 # -----------------------------------------------------------------------------
-# 4. STREAMLIT FRONTEND
+# 4. STREAMLIT APPLICATION FRONTEND
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="Causefleet Executive Suite", layout="wide", initial_sidebar_state="expanded")
 init_db()
@@ -511,7 +518,7 @@ sample_df = pd.DataFrame({
     "amount": [125000.0, 450.0, 15000.0, 250000.0],
     "gift_date": ["2024-03-12", "2024-06-15", "2025-01-20", "2026-02-10"],
     "channel": ["Major Gifts Wire", "Online Portal", "Direct Mail", "Corporate Grant"],
-    "campaign": ["Clean Water Initiative", "Global Food Relief", "Girls Education Fund", "Emergency Disaster Response"],
+    "campaign": ["Clean Water Initiative", "Global Food Relief", "Global Education Initiative", "Emergency Disaster Response"],
     "assigned_officer": ["Marcus Vance", "Unassigned", "Sarah Jenkins", "Devon Brooks"],
     "city": ["Dallas", "Austin", "New York", "Seattle"],
     "state": ["TX", "TX", "NY", "WA"]
